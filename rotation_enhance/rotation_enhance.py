@@ -31,6 +31,8 @@ class RotationEnhance:
                 raise ValueError(f"labels_folder does not exist: {self.labels_folder}")
             else:
                 # 尝试解析标签文件，获取关键点个数
+                #TODO: 解析标签文件
+                pass
                 
         if self.output_folder is None:
             raise ValueError("output_folder cannot be None")
