@@ -115,7 +115,7 @@ class RotationEnhance:
                     rotated_label_info.targets = rotated_targets
                     rotated_label_info.class_id_list = cur_label_info.class_id_list
                     # 可视化旋转后的标签信息，调试用
-                    #self.visualize_label_info(rotated_img, rotated_label_info)
+                    self.visualize_label_info(rotated_img, rotated_label_info)
                     rotated_label_file_name = self.__get_rotated_label_file_name(label_file_name, angle)
                     rotated_label_path = os.path.join(self.output_folder, 'label', rotated_label_file_name)
                     rotated_label_info.write_to_txt(rotated_label_path)
@@ -163,8 +163,8 @@ class RotationEnhance:
         
         # 应用旋转矩阵到图像上
         rotated_image = cv2.warpAffine(img, M, (new_w, new_h))
-        cv2.imshow("Rotated Image", rotated_image)
-        cv2.waitKey(0)
+        # cv2.imshow("Rotated Image", rotated_image)
+        # cv2.waitKey(0)
         return (rotated_image, M)
     
     def __get_rotated_point(self, M, x, y):
@@ -217,7 +217,12 @@ class RotationEnhance:
             max_y = max(rotated_target_box_point1_y, rotated_target_box_point2_y, rotated_target_box_point3_y, rotated_target_box_point4_y)
             rotated_target_box_w = (max_x - min_x) / rotated_img_w
             rotated_target_box_h = (max_y - min_y) / rotated_img_h
-            rotated_target = Target(rotated_target_class_id, rotated_target_x_center, rotated_target_y_center, rotated_target_box_w, rotated_target_box_h, rotated_keypoints)
+            rotated_target = Target(class_id=rotated_target_class_id, 
+                                    x_center=rotated_target_x_center, 
+                                    y_center=rotated_target_y_center, 
+                                    box_w=rotated_target_box_w, 
+                                    box_h=rotated_target_box_h, 
+                                    keypoints=rotated_keypoints)
             rotated_targets.append(rotated_target)
         return rotated_targets
     
