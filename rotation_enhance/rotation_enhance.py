@@ -172,7 +172,15 @@ class RotationEnhance:
         return (rotated_image, M)
     
     def __get_rotated_point(self, M, x, y):
-        # 将点转换为齐次坐标形式
+        """
+        获取旋转后的点
+        输入：
+            M: 齐次变换矩阵(2x3矩阵)
+            x: 原始点x坐标(像素坐标)
+            y: 原始点y坐标(像素坐标)
+        输出：
+            旋转后的点坐标(像素坐标)
+        """
         point = np.array([x, y, 1])
         
         # 使用旋转矩阵对点进行变换
@@ -185,6 +193,19 @@ class RotationEnhance:
         return (rotated_x, rotated_y)
     
     def __get_nomalized_rotated_point(self, M, x, y, img_w, img_h, rotated_img_w, rotated_img_h):
+        """
+        获取旋转后的归一化点
+        输入：
+            M: 齐次变换矩阵(2x3矩阵)
+            x: 原始点x坐标(归一化坐标)
+            y: 原始点y坐标(归一化坐标)
+            img_w: 原图像宽度
+            img_h: 原图像高度
+            rotated_img_w: 旋转后图像宽度
+            rotated_img_h: 旋转后图像高度
+        输出：
+            旋转后的归一化点坐标(归一化坐标)
+        """
         original_x = x * img_w
         original_y = y * img_h
         (rotated_x, rotated_y) = self.__get_rotated_point(M, original_x, original_y)
