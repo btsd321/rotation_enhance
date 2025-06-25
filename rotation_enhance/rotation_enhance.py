@@ -113,7 +113,7 @@ class RotationEnhance:
                     cv2.imwrite(rotated_img_path, rotated_img)
                     rotated_imgs.append(rotated_img)
                     
-                    rotated_targets = self.__get_rotated_targets(cur_label_info.targets, M, angle, rotated_img.shape[1], rotated_img.shape[0], rotated_img.shape[1], rotated_img.shape[0])
+                    rotated_targets = self.__get_rotated_targets(cur_label_info.targets, M, angle, img.shape[1], img.shape[0], rotated_img.shape[1], rotated_img.shape[0])
                     rotated_label_info = LabelInfo()
                     rotated_label_info.targets = rotated_targets
                     rotated_label_info.class_id_list = cur_label_info.class_id_list
@@ -190,6 +190,10 @@ class RotationEnhance:
         (rotated_x, rotated_y) = self.__get_rotated_point(M, original_x, original_y)
         normalized_x = rotated_x / rotated_img_w
         normalized_y = rotated_y / rotated_img_h
+        # 调试输出
+        print(f"旋转矩阵:\n{M}")
+        print(f"原图尺寸:({img_w},{img_h}) 旋转后尺寸:({rotated_img_w},{rotated_img_h})")
+        print(f"原归一化:({x:.4f},{y:.4f}) 原像素:({original_x:.1f},{original_y:.1f}) 旋转后像素:({rotated_x:.1f},{rotated_y:.1f}) 旋转后归一化:({normalized_x:.4f},{normalized_y:.4f})")
         return (normalized_x, normalized_y)
     
     def __get_rotated_targets(self, targets, M, angle, img_w, img_h, rotated_img_w, rotated_img_h):
