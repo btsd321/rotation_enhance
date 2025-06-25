@@ -1,6 +1,8 @@
 import os
 import cv2
 import numpy as np
+from point import Point
+from target import Target
 from label_info import LabelInfo
 
 
@@ -93,7 +95,8 @@ class RotationEnhance:
                 # 读取标签文件
                 cur_label_info = LabelInfo()
                 cur_label_info.read_from_txt(origin_label_path)
-                self.visualize_label_info(img, cur_label_info)
+                # 可视化原始标签信息，调试用
+                # self.visualize_label_info(img, cur_label_info)
                 
                 for angle in self.angles_list:
                     (rotated_img, M) = self.__rotate_image(img, angle)
@@ -110,6 +113,8 @@ class RotationEnhance:
                     rotated_label_info = LabelInfo()
                     rotated_label_info.targets = rotated_targets
                     rotated_label_info.class_id_list = cur_label_info.class_id_list
+                    # 可视化旋转后的标签信息，调试用
+                    self.visualize_label_info(rotated_img, rotated_label_info)
                     rotated_label_file_name = ''
                     if angle > 0:
                         rotated_label_file_name = img_file_name.split('.')[0] + 's' + f'_{angle}.txt'
@@ -127,9 +132,6 @@ class RotationEnhance:
         # 获取图像的中心
         (h, w) = img.shape[:2]
         center = (w / 2, h / 2)
-
-        # 定义旋转的角度（度数）
-        angle = 45  # 逆时针旋转45度
 
         # 计算旋转矩阵
         M = cv2.getRotationMatrix2D(center, angle, 1.0)  # 最后一个参数是缩放因子
@@ -167,11 +169,53 @@ class RotationEnhance:
         return (rotated_x, rotated_y)
     
     def __get_rotated_targets(self, targets, M, angle):
-        #TODO
-        pass
+        rotated_targets = []
+        if len(targets) == 0:
+            return rotated_targets
+        for target in targets:
+            rotated_target_class_id = target.class_id
+            rotated_keypoints = []
+            (rotated_target_x_center, rotated_target_y_center) = self.__get_rotated_point(M, target.x_center, target.y_center)
+            for keypoint in target.keypoints:
+                (rotated_keypoint_x, rotated_keypoint_y) = self.__get_rotated_point(M, keypoint.x, keypoint.y)
+                rotated_keypoint = Point(rotated_keypoint_x, rotated_keypoint_y)
+                rotated_keypoints.append(rotated_keypoint)
+                
+            target_box_point1_x = target.x_center - target.box_w / 2
+            target_box_point1_y = target.y_center - target.box_h / 2
+            target_box_point2_x = target.x_center + target.box_w / 2
+            target_box_point2_y = target.y_center - target.box_h / 2
+            target_box_point3_x = target.x_center + target.box_w / 2
+            target_box_point3_y = target.y_center + target.box_h / 2
+            target_box_point4_x = target.x_center - target.box_w / 2
+            target_box_point4_y = target.y_center + target.box_h / 2
+            
+            rotated_target_box_point1_x, rotated_target_box_point1_y = self.__get_rotated_point(M, target_box_point1_x, target_box_point1_y)
+            rotated_target_box_point2_x, rotated_target_box_point2_y = self.__get_rotated_point(M, target_box_point2_x, target_box_point2_y)
+            rotated_target_box_point3_x, rotated_target_box_point3_y = self.__get_rotated_point(M, target_box_point3_x, target_box_point3_y)
+            rotated_target_box_point4_x, rotated_target_box_point4_y = self.__get_rotated_point(M, target_box_point4_x, target_box_point4_y)
+
+            min_x = min(rotated_target_box_point1_x, rotated_target_box_point2_x, rotated_target_box_point3_x, rotated_target_box_point4_x)
+            min_y = min(rotated_target_box_point1_y, rotated_target_box_point2_y, rotated_target_box_point3_y, rotated_target_box_point4_y)
+            max_x = max(rotated_target_box_point1_x, rotated_target_box_point2_x, rotated_target_box_point3_x, rotated_target_box_point4_x)
+            max_y = max(rotated_target_box_point1_y, rotated_target_box_point2_y, rotated_target_box_point3_y, rotated_target_box_point4_y)
+            rotated_target_box_w = max_x - min_x
+            rotated_target_box_h = max_y - min_y
+            rotated_target = Target(rotated_target_class_id, rotated_target_x_center, rotated_target_y_center, rotated_target_box_w, rotated_target_box_h, rotated_keypoints)
+            rotated_targets.append(rotated_target)
+        return rotated_targets
     
     def visualize_label_info(self, img, label_info):
         # 在img上可视化标签信息
+        if label_info is None:
+            raise ValueError("label_info cannot be None")
+        if len(label_info.targets) == 0:
+            print("No targets to visualize.")
+            # 显示图像（可选）
+            cv2.imshow("Visualized Image", img)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+            return
         for target in label_info.targets:
             # 1. 可视化box
             (h, w) = img.shape[:2]
