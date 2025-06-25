@@ -180,6 +180,14 @@ class RotationEnhance:
         
         return (rotated_x, rotated_y)
     
+    def __get_nomalized_rotated_point(self, M, x, y, img_w, img_h, rotated_img_w, rotated_img_h):
+        original_x = x * img_w
+        original_y = y * img_h
+        (rotated_x, rotated_y) = self.__get_rotated_point(M, original_x, original_y)
+        normalized_x = rotated_x / rotated_img_w
+        normalized_y = rotated_y / rotated_img_h
+        return (normalized_x, normalized_y)
+    
     def __get_rotated_targets(self, targets, M, angle, img_w, img_h, rotated_img_w, rotated_img_h):
         rotated_targets = []
         if len(targets) == 0:
@@ -187,13 +195,9 @@ class RotationEnhance:
         for target in targets:
             rotated_target_class_id = target.class_id
             rotated_keypoints = []
-            (rotated_target_x_center, rotated_target_y_center) = self.__get_rotated_point(M, target.x_center * img_w, target.y_center * img_h)
-            rotated_target_x_center /= rotated_img_w
-            rotated_target_y_center /= rotated_img_h
+            (rotated_target_x_center, rotated_target_y_center) = self.__get_nomalized_rotated_point(M, target.x_center, target.y_center, img_w, img_h, rotated_img_w, rotated_img_h)
             for keypoint in target.keypoints:
-                (rotated_keypoint_x, rotated_keypoint_y) = self.__get_rotated_point(M, keypoint.x * img_w, keypoint.y * img_h)
-                rotated_keypoint_x /= rotated_img_w
-                rotated_keypoint_y /= rotated_img_h
+                (rotated_keypoint_x, rotated_keypoint_y) = self.__get_nomalized_rotated_point(M, keypoint.x, keypoint.y, img_w, img_h, rotated_img_w, rotated_img_h)
                 rotated_keypoint = Point(rotated_keypoint_x, rotated_keypoint_y)
                 rotated_keypoints.append(rotated_keypoint)
                 
@@ -206,17 +210,17 @@ class RotationEnhance:
             target_box_point4_x = target.x_center - target.box_w / 2
             target_box_point4_y = target.y_center + target.box_h / 2
             
-            rotated_target_box_point1_x, rotated_target_box_point1_y = self.__get_rotated_point(M, target_box_point1_x * img_w, target_box_point1_y * img_h)
-            rotated_target_box_point2_x, rotated_target_box_point2_y = self.__get_rotated_point(M, target_box_point2_x * img_w, target_box_point2_y * img_h)
-            rotated_target_box_point3_x, rotated_target_box_point3_y = self.__get_rotated_point(M, target_box_point3_x * img_w, target_box_point3_y * img_h)
-            rotated_target_box_point4_x, rotated_target_box_point4_y = self.__get_rotated_point(M, target_box_point4_x * img_w, target_box_point4_y * img_h)
+            rotated_target_box_point1_x, rotated_target_box_point1_y = self.__get_nomalized_rotated_point(M, target_box_point1_x, target_box_point1_y, img_w, img_h, rotated_img_w, rotated_img_h)
+            rotated_target_box_point2_x, rotated_target_box_point2_y = self.__get_nomalized_rotated_point(M, target_box_point2_x, target_box_point2_y, img_w, img_h, rotated_img_w, rotated_img_h)
+            rotated_target_box_point3_x, rotated_target_box_point3_y = self.__get_nomalized_rotated_point(M, target_box_point3_x, target_box_point3_y, img_w, img_h, rotated_img_w, rotated_img_h)
+            rotated_target_box_point4_x, rotated_target_box_point4_y = self.__get_nomalized_rotated_point(M, target_box_point4_x, target_box_point4_y, img_w, img_h, rotated_img_w, rotated_img_h)
 
             min_x = min(rotated_target_box_point1_x, rotated_target_box_point2_x, rotated_target_box_point3_x, rotated_target_box_point4_x)
             min_y = min(rotated_target_box_point1_y, rotated_target_box_point2_y, rotated_target_box_point3_y, rotated_target_box_point4_y)
             max_x = max(rotated_target_box_point1_x, rotated_target_box_point2_x, rotated_target_box_point3_x, rotated_target_box_point4_x)
             max_y = max(rotated_target_box_point1_y, rotated_target_box_point2_y, rotated_target_box_point3_y, rotated_target_box_point4_y)
-            rotated_target_box_w = (max_x - min_x) / rotated_img_w
-            rotated_target_box_h = (max_y - min_y) / rotated_img_h
+            rotated_target_box_w = (max_x - min_x)
+            rotated_target_box_h = (max_y - min_y)
             rotated_target = Target(class_id=rotated_target_class_id, 
                                     x_center=rotated_target_x_center, 
                                     y_center=rotated_target_y_center, 
