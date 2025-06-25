@@ -68,8 +68,7 @@ class LabelInfo:
             
     def __str__(self):
         targets_str = ', '.join(str(target) for target in self.targets)
-        class_num = self.get_class_num()
-        return f"LabelInfo(class_num={class_num}, targets=[{targets_str}])"
+        return f"LabelInfo(targets=[{targets_str}])"
     
 if __name__ == '__main__':
     label_info = LabelInfo()

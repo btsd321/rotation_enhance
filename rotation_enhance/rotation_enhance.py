@@ -95,6 +95,9 @@ class RotationEnhance:
                 # 读取标签文件
                 cur_label_info = LabelInfo()
                 cur_label_info.read_from_txt(origin_label_path)
+                
+                print(f"Processing image: {img_file_name}, label: {label_file_name}, angle_list: {self.angles_list}")
+                print(f"origin image shape: {img.shape}, origin label info: {cur_label_info}")
                 # 可视化原始标签信息，调试用
                 # self.visualize_label_info(img, cur_label_info)
                 
@@ -114,6 +117,7 @@ class RotationEnhance:
                     rotated_label_info = LabelInfo()
                     rotated_label_info.targets = rotated_targets
                     rotated_label_info.class_id_list = cur_label_info.class_id_list
+                    print(f"rotated image shape: {rotated_img.shape}, rotated label info: {rotated_label_info}, angle: {angle}")
                     # 可视化旋转后的标签信息，调试用
                     self.visualize_label_info(rotated_img, rotated_label_info)
                     rotated_label_file_name = self.__get_rotated_label_file_name(label_file_name, angle)
