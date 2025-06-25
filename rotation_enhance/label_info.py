@@ -60,7 +60,8 @@ class LabelInfo:
             
             
             new_target = Target(class_id, x_center, y_center, width, height, len(keypoints), keypoints)
-            
+            if class_id not in self.class_id_list:
+                self.class_id_list.append(class_id)
             self.targets.append(new_target)
         except Exception as e:
             print(f"Error parsing line: {line}. Error: {e}")

@@ -93,6 +93,7 @@ class RotationEnhance:
                 # 读取标签文件
                 cur_label_info = LabelInfo()
                 cur_label_info.read_from_txt(origin_label_path)
+                self.visualize_label_info(img, cur_label_info)
                 
                 for angle in self.angles_list:
                     (rotated_img, M) = self.__rotate_image(img, angle)
@@ -168,6 +169,38 @@ class RotationEnhance:
     def __get_rotated_targets(self, targets, M, angle):
         #TODO
         pass
+    
+    def visualize_label_info(self, img, label_info):
+        # 在img上可视化标签信息
+        for target in label_info.targets:
+            # 1. 可视化box
+            (h, w) = img.shape[:2]
+            x_center = target.x_center * w
+            y_center = target.y_center * h
+            box_w = target.box_w * w
+            box_h = target.box_h * h
+
+            # 计算边界框的左上角和右下角坐标
+            x_min = int(x_center - box_w / 2)
+            y_min = int(y_center - box_h / 2)
+            x_max = int(x_center + box_w / 2)
+            y_max = int(y_center + box_h / 2)
+
+            # 绘制边界框
+            cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
+
+            # 2. 可视化关键点（可选）
+            for keypoint in target.keypoints:
+                kx = int(keypoint.x * w)
+                ky = int(keypoint.y * h)
+                cv2.circle(img, (kx, ky), 3, (255, 0, 0), -1)
+
+        # 显示图像（可选）
+        cv2.imshow("Visualized Image", img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        
+            
             
             
             
