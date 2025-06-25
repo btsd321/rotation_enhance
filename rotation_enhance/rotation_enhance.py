@@ -98,6 +98,11 @@ class RotationEnhance:
                 # 可视化原始标签信息，调试用
                 # self.visualize_label_info(img, cur_label_info)
                 
+                if not os.path.exists(os.path.join(self.output_folder, 'image')):
+                        os.makedirs(os.path.join(self.output_folder, 'image'))
+                if not os.path.exists(os.path.join(self.output_folder, 'label')):
+                        os.makedirs(os.path.join(self.output_folder, 'label'))
+                
                 for angle in self.angles_list:
                     (rotated_img, M) = self.__rotate_image(img, angle)
                     rotated_img_file_name = ''
@@ -105,6 +110,7 @@ class RotationEnhance:
                         rotated_img_file_name = img_file_name.split('.')[0] + 's' + f'_{angle}.png'
                     else:
                         rotated_img_file_name = img_file_name.split('.')[0] + 'u' + f'_{abs(angle)}.png'
+                    
                     rotated_img_path = os.path.join(self.output_folder, 'image', rotated_img_file_name)
                     cv2.imwrite(rotated_img_path, rotated_img)
                     rotated_imgs.append(rotated_img)
