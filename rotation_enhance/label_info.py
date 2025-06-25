@@ -1,3 +1,4 @@
+import os
 from target import Target
 from point import Point
 
@@ -16,6 +17,26 @@ class LabelInfo:
         
         for line in lines:
             self._parse_line(line.strip())
+            
+    def write_to_txt(self, label_path):
+        """
+        将标签信息写入文本文件
+        :param label_path: 标签文件路径
+        """
+        if label_path is None:
+            raise ValueError("label_path cannot be None")
+        if os.path.exists(label_path):
+            os.remove(label_path)
+        if os.path.dirname(label_path) != '':
+            os.makedirs(os.path.dirname(label_path), exist_ok=True)
+        with open(label_path, 'w') as file:
+            for target in self.targets:
+                file.write(f"{target.class_id} {target.x_center} {target.y_center} "
+                           f"{target.box_w} {target.box_h} ")
+                for keypoint in target.keypoints:
+                    file.write(f"{keypoint.x} {keypoint.y} ")
+                file.write("\n")
+                
         
 
     def _parse_line(self, line):

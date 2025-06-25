@@ -82,19 +82,25 @@ class RotationEnhance:
                 # cv2.imshow("read_img", img)
                 # cv2.waitKey(0)
                 origin_imgs.append(img)
-                for angle in self.angles_list:
-                    (rotated_img, M) = self.__rotate_image(img, angle)
-                    rotated_imgs.append(rotated_img)
+                
                 # 获取label文件夹中同名的标签文件
                 label_file_name = img_file_name.split('.')[0] + '.txt'
-                label_path = os.path.join(self.labels_folder, label_file_name)
-                if not os.path.exists(label_path):
-                    print(f"label file does not exist: {label_path}")
-                    raise ValueError(f"label file does not exist: {label_path}")
+                origin_label_path = os.path.join(self.labels_folder, label_file_name)
+                if not os.path.exists(origin_label_path):
+                    print(f"label file does not exist: {origin_label_path}")
+                    raise ValueError(f"label file does not exist: {origin_label_path}")
                 
                 # 读取标签文件
                 cur_label_info = LabelInfo()
-                cur_label_info.read_from_txt(label_path)
+                cur_label_info.read_from_txt(origin_label_path)
+                
+                for angle in self.angles_list:
+                    (rotated_img, M) = self.__rotate_image(img, angle)
+                    rotated_imgs.append(rotated_img)
+                    
+                    rotated_targets = []
+                
+                
 
             except Exception as e:
                 print(f"read image error: {img_path}, {e}")
