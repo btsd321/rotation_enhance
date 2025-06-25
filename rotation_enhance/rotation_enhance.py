@@ -115,7 +115,7 @@ class RotationEnhance:
                     rotated_label_info.targets = rotated_targets
                     rotated_label_info.class_id_list = cur_label_info.class_id_list
                     # 可视化旋转后的标签信息，调试用
-                    self.visualize_label_info(rotated_img, rotated_label_info)
+                    #self.visualize_label_info(rotated_img, rotated_label_info)
                     rotated_label_file_name = self.__get_rotated_label_file_name(label_file_name, angle)
                     rotated_label_path = os.path.join(self.output_folder, 'label', rotated_label_file_name)
                     rotated_label_info.write_to_txt(rotated_label_path)
@@ -157,15 +157,14 @@ class RotationEnhance:
         # 计算新图像的边界
         new_w = int((h * sin) + (w * cos))
         new_h = int((h * cos) + (w * sin))
-
         # 调整旋转矩阵以适应新的边界
-        M[0, 2] = (new_w / 2) - center[0]
-        M[1, 2] = (new_h / 2) - center[1]
+        M[0, 2] += (new_w / 2) - center[0]
+        M[1, 2] += (new_h / 2) - center[1]
         
         # 应用旋转矩阵到图像上
         rotated_image = cv2.warpAffine(img, M, (new_w, new_h))
-        # cv2.imshow("Rotated Image", rotated_image)
-        # cv2.waitKey(0)
+        cv2.imshow("Rotated Image", rotated_image)
+        cv2.waitKey(0)
         return (rotated_image, M)
     
     def __get_rotated_point(self, M, x, y):
