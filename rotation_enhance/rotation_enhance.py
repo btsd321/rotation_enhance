@@ -96,8 +96,8 @@ class RotationEnhance:
                 cur_label_info = LabelInfo()
                 cur_label_info.read_from_txt(origin_label_path)
                 
-                print(f"Processing image: {img_file_name}, label: {label_file_name}, angle_list: {self.angles_list}")
-                print(f"origin image shape: {img.shape}, origin label info: {cur_label_info}")
+                print(f"Processing image: {img_file_name}, label: {label_file_name}, angle_list: {self.angles_list}\n")
+                print(f"origin image shape: {img.shape}, origin label info: {cur_label_info}\n")
                 # 可视化原始标签信息，调试用
                 # self.visualize_label_info(img, cur_label_info)
                 
@@ -211,10 +211,6 @@ class RotationEnhance:
         (rotated_x, rotated_y) = self.__get_rotated_point(M, original_x, original_y)
         normalized_x = rotated_x / rotated_img_w
         normalized_y = rotated_y / rotated_img_h
-        # 调试输出
-        print(f"旋转矩阵:\n{M}")
-        print(f"原图尺寸:({img_w},{img_h}) 旋转后尺寸:({rotated_img_w},{rotated_img_h})")
-        print(f"原归一化:({x:.4f},{y:.4f}) 原像素:({original_x:.1f},{original_y:.1f}) 旋转后像素:({rotated_x:.1f},{rotated_y:.1f}) 旋转后归一化:({normalized_x:.4f},{normalized_y:.4f})")
         return (normalized_x, normalized_y)
     
     def __get_rotated_targets(self, targets, M, angle, img_w, img_h, rotated_img_w, rotated_img_h):

@@ -67,8 +67,11 @@ class LabelInfo:
             print(f"Error parsing line: {line}. Error: {e}")
             
     def __str__(self):
-        targets_str = ', '.join(str(target) for target in self.targets)
-        return f"LabelInfo(targets=[{targets_str}])"
+        targets_str = '\n\t'.join(str(target) for target in self.targets)
+        return f"LabelInfo(\ntargets=[\n\t{targets_str}])"
+    
+    def __repr__(self):
+        return self.__str__()
     
 if __name__ == '__main__':
     label_info = LabelInfo()

@@ -11,6 +11,9 @@ class Target:
         self.keypoints = keypoints
         
     def __str__(self):
-        return (f"Target(class_id={self.class_id}, x_center={self.x_center}, y_center={self.y_center}, "
-                f"box_w={self.box_w}, box_h={self.box_h}, keypoints_num={self.keypoints_num}, "
-                f"keypoints={self.keypoints})")
+        return (f"Target(\n\tclass_id={self.class_id}, \n\tx_center={self.x_center}, \n\ty_center={self.y_center}, "
+                f"\n\tbox_w={self.box_w}, \n\tbox_h={self.box_h}, \n\tkeypoints_num={self.keypoints_num}, "
+                f"\n\tkeypoints={self.keypoints})\n")
+        
+    def __repr__(self):
+        return self.__str__()
