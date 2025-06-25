@@ -35,9 +35,9 @@ class LabelInfo:
                            f"{target.box_w} {target.box_h} ")
                 for keypoint in target.keypoints:
                     file.write(f"{keypoint.x} {keypoint.y} ")
+                # 去除最后的空格
+                file.seek(file.tell() - 1, os.SEEK_SET)
                 file.write("\n")
-                
-        
 
     def _parse_line(self, line):
         """

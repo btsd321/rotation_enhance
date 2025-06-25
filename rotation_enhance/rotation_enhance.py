@@ -96,10 +96,26 @@ class RotationEnhance:
                 
                 for angle in self.angles_list:
                     (rotated_img, M) = self.__rotate_image(img, angle)
+                    rotated_img_file_name = ''
+                    if angle > 0:
+                        rotated_img_file_name = img_file_name.split('.')[0] + 's' + f'_{angle}.png'
+                    else:
+                        rotated_img_file_name = img_file_name.split('.')[0] + 'u' + f'_{abs(angle)}.png'
+                    rotated_img_path = os.path.join(self.output_folder, 'image', rotated_img_file_name)
+                    cv2.imwrite(rotated_img_path, rotated_img)
                     rotated_imgs.append(rotated_img)
                     
-                    rotated_targets = []
-                
+                    rotated_targets = self.__get_rotated_targets(cur_label_info.targets, M, angle)
+                    rotated_label_info = LabelInfo()
+                    rotated_label_info.targets = rotated_targets
+                    rotated_label_info.class_id_list = cur_label_info.class_id_list
+                    rotated_label_file_name = ''
+                    if angle > 0:
+                        rotated_label_file_name = img_file_name.split('.')[0] + 's' + f'_{angle}.txt'
+                    else:
+                        rotated_label_file_name = img_file_name.split('.')[0] + 'u' + f'_{abs(angle)}.txt'
+                    rotated_label_path = os.path.join(self.output_folder, 'label', rotated_label_file_name)
+                    rotated_label_info.write_to_txt(rotated_label_path)
                 
 
             except Exception as e:
@@ -148,7 +164,10 @@ class RotationEnhance:
         rotated_y = rotated_point[1]
         
         return (rotated_x, rotated_y)
-            
+    
+    def __get_rotated_targets(self, targets, M, angle):
+        #TODO
+        pass
             
             
             
