@@ -105,12 +105,7 @@ class RotationEnhance:
                 
                 for angle in self.angles_list:
                     (rotated_img, M) = self.__rotate_image(img, angle)
-                    rotated_img_file_name = ''
-                    if angle > 0:
-                        rotated_img_file_name = img_file_name.split('.')[0] + 's' + f'_{angle}.png'
-                    else:
-                        rotated_img_file_name = img_file_name.split('.')[0] + 'u' + f'_{abs(angle)}.png'
-                    
+                    rotated_img_file_name = self.__get_rotated_img_file_name(img_file_name, angle)
                     rotated_img_path = os.path.join(self.output_folder, 'image', rotated_img_file_name)
                     cv2.imwrite(rotated_img_path, rotated_img)
                     rotated_imgs.append(rotated_img)
@@ -121,11 +116,7 @@ class RotationEnhance:
                     rotated_label_info.class_id_list = cur_label_info.class_id_list
                     # 可视化旋转后的标签信息，调试用
                     self.visualize_label_info(rotated_img, rotated_label_info)
-                    rotated_label_file_name = ''
-                    if angle > 0:
-                        rotated_label_file_name = img_file_name.split('.')[0] + 's' + f'_{angle}.txt'
-                    else:
-                        rotated_label_file_name = img_file_name.split('.')[0] + 'u' + f'_{abs(angle)}.txt'
+                    rotated_label_file_name = self.__get_rotated_label_file_name(label_file_name, angle)
                     rotated_label_path = os.path.join(self.output_folder, 'label', rotated_label_file_name)
                     rotated_label_info.write_to_txt(rotated_label_path)
                 
@@ -133,6 +124,22 @@ class RotationEnhance:
             except Exception as e:
                 print(f"read image error: {img_path}, {e}")
                 continue
+            
+    def __get_rotated_img_file_name(self, img_file_name, angle):
+        rotated_img_file_name = ''
+        if angle > 0:
+            rotated_img_file_name = img_file_name.split('.')[0] + 's' + f'_{angle}.png'
+        else:
+            rotated_img_file_name = img_file_name.split('.')[0] + 'u' + f'_{abs(angle)}.png'
+        return rotated_img_file_name
+    
+    def __get_rotated_label_file_name(self, label_file_name, angle):
+        rotated_label_file_name = ''
+        if angle > 0:
+            rotated_label_file_name = label_file_name.split('.')[0] + 's' + f'_{angle}.txt'
+        else:
+            rotated_label_file_name = label_file_name.split('.')[0] + 'u' + f'_{abs(angle)}.txt'
+        return rotated_label_file_name
     
     def __rotate_image(self, img, angle):
         # 获取图像的中心
