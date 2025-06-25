@@ -110,7 +110,7 @@ class RotationEnhance:
                     cv2.imwrite(rotated_img_path, rotated_img)
                     rotated_imgs.append(rotated_img)
                     
-                    rotated_targets = self.__get_rotated_targets(cur_label_info.targets, M, angle)
+                    rotated_targets = self.__get_rotated_targets(cur_label_info.targets, M, angle, rotated_img.shape[1], rotated_img.shape[0], rotated_img.shape[1], rotated_img.shape[0])
                     rotated_label_info = LabelInfo()
                     rotated_label_info.targets = rotated_targets
                     rotated_label_info.class_id_list = cur_label_info.class_id_list
@@ -159,8 +159,8 @@ class RotationEnhance:
         new_h = int((h * cos) + (w * sin))
 
         # 调整旋转矩阵以适应新的边界
-        M[0, 2] += (new_w / 2) - center[0]
-        M[1, 2] += (new_h / 2) - center[1]
+        M[0, 2] = (new_w / 2) - center[0]
+        M[1, 2] = (new_h / 2) - center[1]
         
         # 应用旋转矩阵到图像上
         rotated_image = cv2.warpAffine(img, M, (new_w, new_h))
@@ -181,16 +181,20 @@ class RotationEnhance:
         
         return (rotated_x, rotated_y)
     
-    def __get_rotated_targets(self, targets, M, angle):
+    def __get_rotated_targets(self, targets, M, angle, img_w, img_h, rotated_img_w, rotated_img_h):
         rotated_targets = []
         if len(targets) == 0:
             return rotated_targets
         for target in targets:
             rotated_target_class_id = target.class_id
             rotated_keypoints = []
-            (rotated_target_x_center, rotated_target_y_center) = self.__get_rotated_point(M, target.x_center, target.y_center)
+            (rotated_target_x_center, rotated_target_y_center) = self.__get_rotated_point(M, target.x_center * img_w, target.y_center * img_h)
+            rotated_target_x_center /= rotated_img_w
+            rotated_target_y_center /= rotated_img_h
             for keypoint in target.keypoints:
-                (rotated_keypoint_x, rotated_keypoint_y) = self.__get_rotated_point(M, keypoint.x, keypoint.y)
+                (rotated_keypoint_x, rotated_keypoint_y) = self.__get_rotated_point(M, keypoint.x * img_w, keypoint.y * img_h)
+                rotated_keypoint_x /= rotated_img_w
+                rotated_keypoint_y /= rotated_img_h
                 rotated_keypoint = Point(rotated_keypoint_x, rotated_keypoint_y)
                 rotated_keypoints.append(rotated_keypoint)
                 
@@ -203,17 +207,17 @@ class RotationEnhance:
             target_box_point4_x = target.x_center - target.box_w / 2
             target_box_point4_y = target.y_center + target.box_h / 2
             
-            rotated_target_box_point1_x, rotated_target_box_point1_y = self.__get_rotated_point(M, target_box_point1_x, target_box_point1_y)
-            rotated_target_box_point2_x, rotated_target_box_point2_y = self.__get_rotated_point(M, target_box_point2_x, target_box_point2_y)
-            rotated_target_box_point3_x, rotated_target_box_point3_y = self.__get_rotated_point(M, target_box_point3_x, target_box_point3_y)
-            rotated_target_box_point4_x, rotated_target_box_point4_y = self.__get_rotated_point(M, target_box_point4_x, target_box_point4_y)
+            rotated_target_box_point1_x, rotated_target_box_point1_y = self.__get_rotated_point(M, target_box_point1_x * img_w, target_box_point1_y * img_h)
+            rotated_target_box_point2_x, rotated_target_box_point2_y = self.__get_rotated_point(M, target_box_point2_x * img_w, target_box_point2_y * img_h)
+            rotated_target_box_point3_x, rotated_target_box_point3_y = self.__get_rotated_point(M, target_box_point3_x * img_w, target_box_point3_y * img_h)
+            rotated_target_box_point4_x, rotated_target_box_point4_y = self.__get_rotated_point(M, target_box_point4_x * img_w, target_box_point4_y * img_h)
 
             min_x = min(rotated_target_box_point1_x, rotated_target_box_point2_x, rotated_target_box_point3_x, rotated_target_box_point4_x)
             min_y = min(rotated_target_box_point1_y, rotated_target_box_point2_y, rotated_target_box_point3_y, rotated_target_box_point4_y)
             max_x = max(rotated_target_box_point1_x, rotated_target_box_point2_x, rotated_target_box_point3_x, rotated_target_box_point4_x)
             max_y = max(rotated_target_box_point1_y, rotated_target_box_point2_y, rotated_target_box_point3_y, rotated_target_box_point4_y)
-            rotated_target_box_w = max_x - min_x
-            rotated_target_box_h = max_y - min_y
+            rotated_target_box_w = (max_x - min_x) / rotated_img_w
+            rotated_target_box_h = (max_y - min_y) / rotated_img_h
             rotated_target = Target(rotated_target_class_id, rotated_target_x_center, rotated_target_y_center, rotated_target_box_w, rotated_target_box_h, rotated_keypoints)
             rotated_targets.append(rotated_target)
         return rotated_targets
@@ -269,9 +273,9 @@ if __name__ == '__main__':
     test_output_folder = "D:/Project/all_data_5_r_rune_fitered/rotation_enhance/test/output"
     test_angles_list = [10, 20, 30]
     test_model_path = "D:/Project/all_data_5_r_rune_fitered/rotation_enhance/test/model/best.pt"
-    rotation_enhance = RotationEnhance(imgs_folder = test_imgs_folder, 
-                                        labels_folder = test_labels_folder, 
-                                        output_folder = test_output_folder, 
-                                        angles_list = test_angles_list,
-                                        model_path = test_model_path)
-    rotation_enhance.run()
+    woker = RotationEnhance(imgs_folder = test_imgs_folder, 
+                            labels_folder = test_labels_folder, 
+                            output_folder = test_output_folder, 
+                            angles_list = test_angles_list,
+                            model_path = test_model_path)
+    woker.run()
