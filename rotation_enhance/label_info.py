@@ -69,13 +69,6 @@ class LabelInfo:
         targets_str = ', '.join(str(target) for target in self.targets)
         class_num = self.get_class_num()
         return f"LabelInfo(class_num={class_num}, targets=[{targets_str}])"
-        
-    def get_class_num(self):
-        """
-        获取标签中类别的数量
-        :return: 类别数量
-        """
-        return len(self.class_id_list)
     
 if __name__ == '__main__':
     label_info = LabelInfo()
