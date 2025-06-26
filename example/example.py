@@ -1,4 +1,4 @@
-import rotation_enhance
+from rotation_enhance import rotation_enhance
 
 test_imgs_folder = "D:/Project/all_data_5_r_rune_fitered/rotation_enhance/test/images"
 test_labels_folder = "D:/Project/all_data_5_r_rune_fitered/rotation_enhance/test/labels"

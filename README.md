@@ -11,4 +11,4 @@
 使用方法：
     1. clone本库代码到本地
     2. 终端中cd到setup.py所在目录，运行命令：pip install .
-    3.参考example.py文件，编写自己的代码，调用rotate_enhance函数进行旋转增强
+    3.参考example/example.py文件，编写自己的代码，调用rotate_enhance函数进行旋转增强

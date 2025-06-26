@@ -2,10 +2,10 @@ import os
 import cv2
 import numpy as np
 from ultralytics import YOLO
-from point import Point
-from target import Target
-from label_info import LabelInfo
-import get_yolo_result as my_yolo_process
+from .point import Point
+from .target import Target
+from .label_info import LabelInfo
+from .get_yolo_result import get_yolo_predicted_targets
 
 
 class RotationEnhance:
@@ -111,7 +111,7 @@ class RotationEnhance:
                 cur_label_info.read_from_txt(origin_label_path)
                 
                 print(f"Processing image: {img_file_name}, label: {label_file_name}, angle_list: {self.angles_list}\n")
-                print(f"origin image shape: {img.shape}, origin label info: {cur_label_info}\n")
+                # print(f"origin image shape: {img.shape}, origin label info: {cur_label_info}\n")
                 # 可视化原始标签信息，调试用
                 # self.visualize_label_info(img, cur_label_info)
                 
@@ -128,7 +128,7 @@ class RotationEnhance:
                     rotated_imgs.append(rotated_img)
                     
                     rotated_targets = self.__get_rotated_targets(cur_label_info.targets, M, angle, img.shape[1], img.shape[0], rotated_img.shape[1], rotated_img.shape[0])
-                    yolo_targets, yolo_scores = my_yolo_process.get_yolo_predicted_targets(rotated_img, self.model, conf=0.6, iou=0.5, agnostic_nms=False)
+                    yolo_targets, yolo_scores = get_yolo_predicted_targets(rotated_img, self.model, conf=0.6, iou=0.5, agnostic_nms=False)
                     # targets匹配
                     try: 
                         if len(yolo_targets) != len(rotated_targets):
@@ -148,9 +148,8 @@ class RotationEnhance:
                     rotated_label_info = LabelInfo()
                     rotated_label_info.targets = rotated_targets
                     rotated_label_info.class_id_list = cur_label_info.class_id_list
-                    print(f"rotated image shape: {rotated_img.shape}, rotated label info: {rotated_label_info}, angle: {angle}")
                     # 可视化旋转后的标签信息，调试用
-                    self.visualize_label_info(rotated_img, rotated_label_info)
+                    # self.visualize_label_info(rotated_img, rotated_label_info)
                     rotated_label_file_name = self.__get_rotated_label_file_name(label_file_name, angle)
                     rotated_label_path = os.path.join(self.output_folder, 'label', rotated_label_file_name)
                     rotated_label_info.write_to_txt(rotated_label_path)
@@ -163,17 +162,17 @@ class RotationEnhance:
     def __get_rotated_img_file_name(self, img_file_name, angle):
         rotated_img_file_name = ''
         if angle > 0:
-            rotated_img_file_name = img_file_name.split('.')[0] + 's' + f'_{angle}.png'
+            rotated_img_file_name = img_file_name.split('.')[0] + '_s' + f'{angle}.png'
         else:
-            rotated_img_file_name = img_file_name.split('.')[0] + 'u' + f'_{abs(angle)}.png'
+            rotated_img_file_name = img_file_name.split('.')[0] + '_u' + f'{abs(angle)}.png'
         return rotated_img_file_name
     
     def __get_rotated_label_file_name(self, label_file_name, angle):
         rotated_label_file_name = ''
         if angle > 0:
-            rotated_label_file_name = label_file_name.split('.')[0] + 's' + f'_{angle}.txt'
+            rotated_label_file_name = label_file_name.split('.')[0] + '_s' + f'{angle}.txt'
         else:
-            rotated_label_file_name = label_file_name.split('.')[0] + 'u' + f'_{abs(angle)}.txt'
+            rotated_label_file_name = label_file_name.split('.')[0] + '_u' + f'{abs(angle)}.txt'
         return rotated_label_file_name
     
     def __rotate_image(self, img, angle):

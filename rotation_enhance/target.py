@@ -1,4 +1,4 @@
-from point import Point
+from .point import Point
 
 class Target:
     def __init__(self, class_id=0, x_center=0, y_center=0, box_w=0, box_h=0, keypoints_num=0, keypoints=[]):

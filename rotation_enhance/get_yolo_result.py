@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 from PIL import Image
-from target import Target
-from point import Point
+from .target import Target
+from .point import Point
 
 
 # # 对单张图片进行推理并可视化结果

@@ -1,6 +1,6 @@
 import os
-from target import Target
-from point import Point
+from .target import Target
+from .point import Point
 
 class LabelInfo:
     def __init__(self):
