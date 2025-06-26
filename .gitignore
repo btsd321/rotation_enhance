@@ -3,5 +3,5 @@
 __pycache__
 
 test/output
-
+build/
 rotation_enhance.egg-info
