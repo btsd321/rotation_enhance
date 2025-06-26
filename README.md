@@ -9,6 +9,6 @@
 输出：输出文件夹中将会生成旋转增强后的图片文件夹和标签文件夹
 
 使用方法：
-    1. clone本库代码到本地
-    2. 终端中cd到setup.py所在目录，运行命令：pip install .
-    3.参考example/example.py文件，编写自己的代码，调用rotate_enhance函数进行旋转增强
+    1. 在根目录下clone本库代码到本地，即运行命令：git clone https://github.com/btsd321/rotation_enhance.git
+    2. 运行命令：cd rotation_enhance，再运行命令：pip install -e . 进行安装
+    3.参考rotation_enhance/example/example.py文件，在根目录下编写自己的代码，调用rotate_enhance函数进行旋转增强
