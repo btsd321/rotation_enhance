@@ -12,9 +12,13 @@ test_angles_list = [10, 20, 30]
 test_model_path = "D:/Project/all_data_5_r_rune_fitered/rotation_enhance/test/model/best.pt"
 
 # 创建并运行 RotationEnhance 实例
-woker = rotation_enhance.RotationEnhance(imgs_folder = test_imgs_folder, 
-                        labels_folder = test_labels_folder, 
-                        output_folder = test_output_folder, 
-                        angles_list = test_angles_list,
-                        model_path = test_model_path)
-woker.run()
+try:
+    woker = rotation_enhance.RotationEnhance(imgs_folder = test_imgs_folder, 
+                            labels_folder = test_labels_folder, 
+                            output_folder = test_output_folder, 
+                            angles_list = test_angles_list,
+                            model_path = test_model_path)
+    woker.run()
+except Exception as e:
+    print(f"An error occurred: {e}")
+    raise e
